@@ -19,3 +19,14 @@ prices = YAML.load_file(Rails.root.join("import/initial_price_history.yaml"))
 premium.prices.insert_all(prices["premium"])
 plus.prices.insert_all(prices["plus"])
 basic.prices.insert_all(prices["basic"])
+
+puts "Creating new municipalities"
+municipalities = YAML.load_file(Rails.root.join("import/municipalities.yaml"))
+premium.municipalities.insert_all(municipalities)
+plus.municipalities.insert_all(municipalities)
+basic.municipalities.insert_all(municipalities)
+
+puts "Creating a price history for the municipalities"
+premium.prices.insert_all(prices["premium"].each { |price| price['municipality_id'] = premium.municipalities[rand(0..1)].id })
+plus.prices.insert_all(prices["plus"].each { |price| price['municipality_id'] = plus.municipalities[rand(0..1)].id })
+basic.prices.insert_all(prices["basic"].each { |price| price['municipality_id'] = basic.municipalities[rand(0..1)].id })
