@@ -1,0 +1,5 @@
+---
+- name: "Stockholm"
+  price_cents: 100_00
+- name: "Göteborg"
+  price_cents: 200_00
