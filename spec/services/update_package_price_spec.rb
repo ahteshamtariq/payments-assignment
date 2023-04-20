@@ -33,12 +33,26 @@ RSpec.describe UpdatePackagePrice do
   # This tests covers feature request 1. Feel free to add more tests or change
   # the existing one.
 
-  xit "supports adding a price for a specific municipality" do
+  it "supports adding a price for a specific municipality if municipality not exists" do
     package = Package.create!(name: "Dunderhonung")
-
-    UpdatePackagePrice.call(package, 200_00, municipality: "Göteborg")
+    expect {
+      UpdatePackagePrice.call(package, 200_00, municipality: "Göteborg")
+    }.to change { Municipality.count }.by(1)
 
     # You'll need to implement Package#price_for
     expect(package.price_for("Göteborg")).to eq(200_00)
+    expect(package.municipalities.first.name).to eq("Göteborg")
+  end
+
+  it "supports adding a price for a specific municipality if municipality exists" do
+    package = Package.create!(name: "Dunderhonung")
+    Municipality.create!(name: 'Göteborg', price_cents: 100_00, package: package)
+
+    expect {
+      UpdatePackagePrice.call(package, 200_00, municipality: "Göteborg")
+    }.to change { Municipality.count }.by(0)
+
+    expect(package.price_for("Göteborg")).to eq(200_00)
+    expect(package.municipalities.first.name).to eq("Göteborg")
   end
 end
